@@ -122,7 +122,7 @@ function HotList(){
                         <img src="http://tkfile.yes24.com/upload2/perfblog/202207/20220729/20220729-43028.jpg/dims/quality/70/" alt="alt"/>
                     </div>
                     <div>
-                        <p className="title">연극 94년생 흑우 성진이</p>
+                        <p className="title">연극 61년생 홍길동</p>
                         <p className="detail">2022.01.07 ~ 2022.01.08 / 15세 이상 관람</p>
                     </div>
                 </LeftHotList>
