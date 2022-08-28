@@ -68,7 +68,7 @@ export function Header(){
         <HeaderWrap>
             <HeaderArea1>
                 <div>
-                    <img src="img/menu_icon.png"/>
+                    <img src="img/menu_icon.png" alt="alt"/>
                 </div>
                 <div>
                     <h1>Ticket Copy</h1>
@@ -93,8 +93,8 @@ export function Header(){
                 </div>
                 <div>
                     <ul>
-                        <li><img src="img/search_icon.png"/></li>
-                        <li><img src="img/user_icon.png"/></li>
+                        <li><img src="img/search_icon.png" alt="alt"/></li>
+                        <li><img src="img/user_icon.png" alt="alt"/></li>
                     </ul>
                 </div>
             </HeaderArea3>
