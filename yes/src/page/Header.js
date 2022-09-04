@@ -27,9 +27,21 @@ const HeaderArea2 = styled.div`
     width: 40%;
     text-align: center;
     font-size: 1rem;
+    font-weight: bold;
     & li{
         display: inline-block;
-        margin: 0 15px;
+        margin: 0 10px;
+        padding: 5px 0;
+        border-bottom: 3px solid transparent;
+        transition: 0.3s;
+        &:hover{
+            border-bottom: 3px solid orange;
+        }
+
+        & a{
+            text-decoration: none;
+            color: black;
+        }
     }
 `
 const HeaderArea3 = styled.div`
@@ -68,7 +80,7 @@ export function Header(){
         <HeaderWrap>
             <HeaderArea1>
                 <div>
-                    <img src="img/menu_icon.png" alt="alt"/>
+                    <img src="img/menu_icon.png"/>
                 </div>
                 <div>
                     <h1>Ticket Copy</h1>
@@ -77,12 +89,12 @@ export function Header(){
             <HeaderArea2>
                 <nav>
                     <ul>
-                        <li>연극</li>
-                        <li>뮤지컬</li>
-                        <li>무용</li>
-                        <li>클래식</li>
-                        <li>오페라</li>
-                        <li>국악</li>
+                        <li><a href="#">연극</a></li>
+                        <li><a href="#">뮤지컬</a></li>
+                        <li><a href="#">무용</a></li>
+                        <li><a href="#">클래식</a></li>
+                        <li><a href="#">오페라</a></li>
+                        <li><a href="#">국악</a></li>
                     </ul>
                 </nav>
                 
@@ -93,8 +105,8 @@ export function Header(){
                 </div>
                 <div>
                     <ul>
-                        <li><img src="img/search_icon.png" alt="alt"/></li>
-                        <li><img src="img/user_icon.png" alt="alt"/></li>
+                        <li><img src="img/search_icon.png"/></li>
+                        <li><img src="img/user_icon.png"/></li>
                     </ul>
                 </div>
             </HeaderArea3>

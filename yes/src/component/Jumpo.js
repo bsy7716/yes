@@ -1,5 +1,26 @@
-import React, {useRef, useState} from "react";
+import React, {useState, useEffect, useRef} from "react";
 import styled from "styled-components";
+import XMLParser from 'react-xml-parser'
+import axios from "axios";
+
+const Loding = styled.div`
+    padding:250px 0;
+    text-align:center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    line-height: 2rem;
+
+    & img{
+        animation: rotate_image 10s linear infinite;
+        transform-origin: 50% 50%;
+    }
+
+    @keyframes rotate_image{
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+`
 
 const JumpoWrap = styled.div`
     height: 600px;
@@ -11,8 +32,29 @@ const JumpoElement = styled.div`
     position: absolute;
     transition: 1s;
     opacity: 0;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    
     &.on{
         opacity: 1;
+    }
+
+    & p{
+        
+        &.title{
+            animation-delay: 1s;
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        &.content{
+            font-size: 1.5rem;
+            line-height: 50px;
+            color: white;
+        }
     }
 `
 
@@ -55,6 +97,7 @@ const JumpoList = styled.div`
 
     &:hover{
         height: 220px;
+        background-color: rgba(0,0,0,0.6);
     }
     & li.jumpo-item-li{
         width: 6%;
@@ -64,13 +107,13 @@ const JumpoList = styled.div`
         padding-top: 18px;
         border-top: 3px solid transparent;
         position: relative;
-
+        cursor: pointer;
         &.on{
-            border-top: 3px solid red;
+            border-top: 3px solid orange;
         }
 
         &:hover{
-            border-top: 3px solid red;
+            border-top: 3px solid orange;
         }
 
         & div{
@@ -84,7 +127,7 @@ const JumpoList = styled.div`
         & img{
             width: 100%;
             height: 150px;
-            border: 1px solid lightgray;
+            border: 1px solid gray;
         }
     }
 `
@@ -123,10 +166,10 @@ function Jumpo(){
         switch(value){
             case "left":
                 if(selectJumpoNumber == 1){
-                    jumpoRef.current[5].classList.toggle("on");
-                    jumpoNumberLiRef.current[5].classList.toggle("on");
-                    jumpoLiRef.current[5].classList.toggle("on");
-                    setSelectJumpoNumber(5);
+                    jumpoRef.current[data.length].classList.toggle("on");
+                    jumpoNumberLiRef.current[data.length].classList.toggle("on");
+                    jumpoLiRef.current[data.length].classList.toggle("on");
+                    setSelectJumpoNumber(data.length);
                 }else{
                     jumpoRef.current[selectJumpoNumber - 1].classList.toggle("on");
                     jumpoNumberLiRef.current[selectJumpoNumber - 1].classList.toggle("on");
@@ -135,7 +178,7 @@ function Jumpo(){
                 }
                 break;
             case "right":
-                if(selectJumpoNumber == 5){
+                if(selectJumpoNumber == data.length){
                     jumpoRef.current[1].classList.toggle("on");
                     jumpoNumberLiRef.current[1].classList.toggle("on");
                     jumpoLiRef.current[1].classList.toggle("on");
@@ -156,51 +199,116 @@ function Jumpo(){
         }  
     }
 
+    function parseJson(dataSet) {
+        const dataArr = new XMLParser().parseFromString(dataSet);
+        return dataArr;
+    }
+
+    const [data, setData] = useState([]);
+    
+    useEffect(() => {
+        const readShowList = async () => {
+            try {
+                const response = await axios.get(
+                    '/pblprfr?service=5142c77db2284ca09ff559832f6858e2&stdate=20220801&eddate=20220904&rows=8&cpage=1',
+                );
+                const xmlData = response.data;
+                const jsonData = parseJson(xmlData);
+                // const parse
+                setData(jsonData.children);
+                console.log(jsonData.children);
+            } catch (e) {
+                console.log(e);
+            }
+            };
+            readShowList();    
+    },[]);
+
     return (
         <JumpoWrap>
-            <JumpoElement className="on" ref={el => (jumpoRef.current[1] = el)} style={{"background-color" : "skyblue"}}>
-                
-            </JumpoElement>
-            <JumpoElement ref={el => (jumpoRef.current[2] = el)} style={{"background-color" : "pink"}}>
-                
-            </JumpoElement>
-            <JumpoElement ref={el => (jumpoRef.current[3] = el)} style={{"background-color" : "orange"}}>
-                
-            </JumpoElement>
-            <JumpoElement ref={el => (jumpoRef.current[4] = el)} style={{"background-color" : "yellow"}}>
-                
-            </JumpoElement>
-            <JumpoElement ref={el => (jumpoRef.current[5] = el)} style={{"background-color" : "green"}}>
-                
-            </JumpoElement>
+            {
+                data.length == 0 ?
+                <Loding>
+                    <img src="img/lodding.png"/><br/>
+                    <span>Lording...</span>
+                </Loding>
+                :
+                <></>
+            }
+            {data.length > 0 ?
+                data.map((item, index) => {
+                    if(index == 0){
+                        return(
+                            <JumpoElement className="on" ref={el => (jumpoRef.current[index + 1] = el)} style={{"backgroundImage" :  `url(${item.children[5].value})`, "backgroundRepeat" : "no-repeat", "backgroundSize" : "cover"}}>
+                                <div>
+                                    <p className="title">{item.children[1].value}</p>
+                                    <p className="content">
+                                        {item.children[2].value} ~ {item.children[3].value}<br/>
+                                        {item.children[4].value}
+                                    </p>
+                                </div>
+                            </JumpoElement>
+                        );
+                    }else{
+                        return(
+                            <JumpoElement ref={el => (jumpoRef.current[index + 1] = el)} style={{"backgroundImage" :  `url(${item.children[5].value})`, "backgroundRepeat" : "no-repeat", "backgroundSize" : "cover"}}>
+                                <div>
+                                    <p className="title">{item.children[1].value}</p>
+                                    <p className="content">
+                                        {item.children[2].value} ~ {item.children[3].value}<br/>
+                                        {item.children[4].value}
+                                    </p>
+                                </div>
+                            </JumpoElement>
+                        );
+                    }
+                })
+                :
+                <></>
+            }
+            
             
             <JumpoList>
                 <JumpoNumberList>
                     <ul>
-                        <li className="on" ref={el => (jumpoNumberLiRef.current[1] = el)}>1/5</li>
-                        <li ref={el => (jumpoNumberLiRef.current[2] = el)}>2/5</li>
-                        <li ref={el => (jumpoNumberLiRef.current[3] = el)}>3/5</li>
-                        <li ref={el => (jumpoNumberLiRef.current[4] = el)}>4/5</li>
-                        <li ref={el => (jumpoNumberLiRef.current[5] = el)}>5/5</li>
+                        {data.length > 0 ?
+                            data.map((item, index) => {
+                                if(index == 0){
+                                    return(
+                                        <li className="on" ref={el => (jumpoNumberLiRef.current[index + 1] = el)}>{index + 1}/{data.length}</li>
+                                    );
+                                }else{
+                                    return(
+                                        <li ref={el => (jumpoNumberLiRef.current[index + 1] = el)}>{index + 1}/{data.length}</li>
+                                    );
+                                }
+                            })
+                            :
+                            <></>
+                        }
                     </ul>
                 </JumpoNumberList>
                 <div>
                     <ul>
-                        <li className="jumpo-item-li on" id="jumpo-1" ref={el => (jumpoLiRef.current[1] = el)} onClick={() => {changeJumpo(1)}}>
-                            <img/>
-                        </li>
-                        <li className="jumpo-item-li" id="jumpo-2" ref={el => (jumpoLiRef.current[2] = el)} onClick={() => {changeJumpo(2)}}>
-                            <img/>
-                        </li>
-                        <li className="jumpo-item-li" id="jumpo-3" ref={el => (jumpoLiRef.current[3] = el)} onClick={() => {changeJumpo(3)}}>
-                            <img/>
-                        </li>
-                        <li className="jumpo-item-li" id="jumpo-4" ref={el => (jumpoLiRef.current[4] = el)} onClick={() => {changeJumpo(4)}}>
-                            <img/>
-                        </li>
-                        <li className="jumpo-item-li" id="jumpo-5" ref={el => (jumpoLiRef.current[5] = el)} onClick={() => {changeJumpo(5)}}>
-                            <img/>
-                        </li>
+                        {data.length > 0 ?
+                            data.map((item, index) => {
+                                if(index == 0){
+                                    return(
+                                        <li className="jumpo-item-li on" id={`jumpo-${index + 1}`} ref={el => (jumpoLiRef.current[index + 1] = el)} onClick={() => {changeJumpo(index + 1)}}>
+                                            <img src={item.children[5].value} alt="alt"/>
+                                        </li>
+                                    );
+                                }else{
+                                    return(
+                                        <li className="jumpo-item-li" id={`jumpo-${index + 1}`} ref={el => (jumpoLiRef.current[index + 1] = el)} onClick={() => {changeJumpo(index + 1)}}>
+                                            <img src={item.children[5].value} alt="alt"/>
+                                        </li>
+                                    );
+                                }
+                            })
+                            :
+                            <></>
+                        }
                     </ul>
                 </div>
             </JumpoList>

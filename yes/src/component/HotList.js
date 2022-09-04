@@ -1,8 +1,30 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import styled from "styled-components";
+import XMLParser from 'react-xml-parser'
+import axios from "axios";
+
+const Loding = styled.div`
+    padding:250px 0;
+    text-align:center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    line-height: 2rem;
+
+    & img{
+        animation: rotate_image 10s linear infinite;
+        transform-origin: 50% 50%;
+    }
+
+    @keyframes rotate_image{
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+`
 
 const HotListWrap = styled.div`
     margin: 50px 0;
+    padding: 0 17.5%;
     & h1{
         text-align: center;
         font-weight: bold;
@@ -11,7 +33,7 @@ const HotListWrap = styled.div`
     }
 `
 const HotLists = styled.div`
-    width: 65%;
+    width: 100%;
     margin: 0 auto;
     display: flex;
 `
@@ -19,6 +41,8 @@ const HotLists = styled.div`
 const LeftHotList = styled.div`
     width: 35%;
     padding: 10px;
+    cursor: pointer;
+
     & div:first-child{
         & img{
             width: 100%;
@@ -31,6 +55,7 @@ const LeftHotList = styled.div`
         padding: 15px 20px;
         text-align: center;
         line-height: 30px;
+        
         & p.title{
             font-size: 1.1rem;
             font-weight: bold;
@@ -47,6 +72,7 @@ const RightHotList = styled.div`
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    
 `
 
 const HotListItem = styled.div`
@@ -73,7 +99,8 @@ const HotListItemWrap = styled.div`
         position: absolute;
         width: 100%;
         height: 100%;
-        
+        cursor: pointer;
+
         & img{
             width: 100%;
             height: 100%;
@@ -94,7 +121,8 @@ const HotListItemWrap = styled.div`
         opacity: 0;
         transition: 0.3s;
         padding: 0 30px;
-        
+        cursor: pointer;
+
         & p{
             line-height: 25px;
 
@@ -113,124 +141,88 @@ const HotListItemWrap = styled.div`
     
 `
 function HotList(){
+    function parseJson(dataSet) {
+        const dataArr = new XMLParser().parseFromString(dataSet);
+        return dataArr;
+    }
+
+    const [data, setData] = useState([]);
+    
+    useEffect(() => {
+        const readShowList = async () => {
+            try {
+                const response = await axios.get(
+                    '/pblprfr?service=5142c77db2284ca09ff559832f6858e2&stdate=20160101&eddate=20160630&rows=7&cpage=1',
+                );
+                const xmlData = response.data;
+                const jsonData = parseJson(xmlData);
+                // const parse
+                setData(jsonData.children);
+                console.log(jsonData.children);
+            } catch (e) {
+                console.log(e);
+            }
+            };
+            readShowList();    
+    },[]);
+    
+
     return (
         <HotListWrap>
             <h1>What's Hot</h1>
-            <HotLists>
-                <LeftHotList>
-                    <div>
-                        <img src="http://tkfile.yes24.com/upload2/perfblog/202207/20220729/20220729-43028.jpg/dims/quality/70/" alt="alt"/>
-                    </div>
-                    <div>
-                        <p className="title">연극 61년생 홍길동</p>
-                        <p className="detail">2022.01.07 ~ 2022.01.08 / 15세 이상 관람</p>
-                    </div>
-                </LeftHotList>
-                <RightHotList>
-                    <HotListItem>
-                        <HotListItemWrap>
-                            <div className="img-area">
-                                <img src="http://tkfile.yes24.com/upload2/perfblog/202207/20220729/20220729-43028.jpg/dims/quality/70/" alt="alt"/>
-                            </div>
-                            <div className="content">
-                                <div>
-                                    <p className="title">연극 빈센트 리버</p>
-                                    <p className="detail">
-                                        2022.01.07 ~ 2022.01.08<br/>
-                                        대학교 무슨 캠퍼스
-                                    </p>
-                                    <p className="age">15세 이상 관람</p>
-                                </div>
-                            </div> 
-                        </HotListItemWrap>
-                    </HotListItem>
-                    <HotListItem>
-                        <HotListItemWrap>
-                            <div className="img-area">
-                                <img src="http://tkfile.yes24.com/upload2/perfblog/202207/20220729/20220729-43028.jpg/dims/quality/70/" alt="alt"/>
-                            </div>
-                            <div className="content">
-                                <div>
-                                    <p className="title">연극 빈센트 리버</p>
-                                    <p className="detail">
-                                        2022.01.07 ~ 2022.01.08<br/>
-                                        대학교 무슨 캠퍼스
-                                    </p>
-                                    <p className="age">15세 이상 관람</p>
-                                </div>
-                            </div> 
-                        </HotListItemWrap>
-                    </HotListItem>
-                    <HotListItem>
-                        <HotListItemWrap>
-                            <div className="img-area">
-                                <img src="http://tkfile.yes24.com/upload2/perfblog/202207/20220729/20220729-43028.jpg/dims/quality/70/" alt="alt"/>
-                            </div>
-                            <div className="content">
-                                <div>
-                                    <p className="title">연극 빈센트 리버</p>
-                                    <p className="detail">
-                                        2022.01.07 ~ 2022.01.08<br/>
-                                        대학교 무슨 캠퍼스
-                                    </p>
-                                    <p className="age">15세 이상 관람</p>
-                                </div>
-                            </div> 
-                        </HotListItemWrap>
-                    </HotListItem>
-                    <HotListItem>
-                        <HotListItemWrap>
-                            <div className="img-area">
-                                <img src="http://tkfile.yes24.com/upload2/perfblog/202207/20220729/20220729-43028.jpg/dims/quality/70/" alt="alt"/>
-                            </div>
-                            <div className="content">
-                                <div>
-                                    <p className="title">연극 빈센트 리버</p>
-                                    <p className="detail">
-                                        2022.01.07 ~ 2022.01.08<br/>
-                                        대학교 무슨 캠퍼스
-                                    </p>
-                                    <p className="age">15세 이상 관람</p>
-                                </div>
-                            </div> 
-                        </HotListItemWrap>
-                    </HotListItem>
-                    <HotListItem>
-                        <HotListItemWrap>
-                            <div className="img-area">
-                                <img src="http://tkfile.yes24.com/upload2/perfblog/202207/20220729/20220729-43028.jpg/dims/quality/70/" alt="alt"/>
-                            </div>
-                            <div className="content">
-                                <div>
-                                    <p className="title">연극 빈센트 리버</p>
-                                    <p className="detail">
-                                        2022.01.07 ~ 2022.01.08<br/>
-                                        대학교 무슨 캠퍼스
-                                    </p>
-                                    <p className="age">15세 이상 관람</p>
-                                </div>
-                            </div> 
-                        </HotListItemWrap>
-                    </HotListItem>
-                    <HotListItem>
-                        <HotListItemWrap>
-                            <div className="img-area">
-                                <img src="http://tkfile.yes24.com/upload2/perfblog/202207/20220729/20220729-43028.jpg/dims/quality/70/" alt="alt"/>
-                            </div>
-                            <div className="content">
-                                <div>
-                                    <p className="title">연극 빈센트 리버</p>
-                                    <p className="detail">
-                                        2022.01.07 ~ 2022.01.08<br/>
-                                        대학교 무슨 캠퍼스
-                                    </p>
-                                    <p className="age">15세 이상 관람</p>
-                                </div>
-                            </div> 
-                        </HotListItemWrap>
-                    </HotListItem>
-                </RightHotList>
-            </HotLists>
+            {
+                data.length == 0 ?
+                <Loding>
+                    <img src="img/lodding.png"/><br/>
+                    <span>Lording...</span>
+                </Loding>
+                :
+                <></>
+            }
+            {
+                data.length > 1 ?
+                <HotLists>
+                    <LeftHotList>
+                        <div>
+                            <img src={data[0].children[5].value} alt="alt"/>
+                        </div>
+                        <div>
+                            <p className="title">{data[0].children[1].value}</p>
+                            <p className="detail">{data[0].children[2].value} ~ {data[0].children[3].value} / {data[0].children[8].value}</p>
+                        </div>
+                    </LeftHotList>
+                    <RightHotList>
+                        {
+                            data.map((item, index) => {
+                                if(index > 0){
+                                    return(
+                                        <HotListItem>
+                                            <HotListItemWrap>
+                                                <div className="img-area">
+                                                    <img src={item.children[5].value} alt="alt"/>
+                                                </div>
+                                                <div className="content">
+                                                    <div>
+                                                        <p className="title">{item.children[1].value}</p>
+                                                        <p className="detail">
+                                                        {item.children[2].value} ~ {item.children[3].value}<br/>
+                                                        {item.children[4].value}
+                                                        </p>
+                                                        <p className="age">{item.children[8].value}</p>
+                                                    </div>
+                                                </div> 
+                                            </HotListItemWrap>
+                                        </HotListItem>
+                                    );
+                                }
+                            })
+                        }
+                    </RightHotList>
+                </HotLists>
+                :
+                <></>
+            }
+            
         </HotListWrap>
     );
 }
